@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>人生分岔路 · 情景人格问卷</title>
+  <style>
+    :root {
+      --bg1: #1a1520;
+      --bg2: #2d2435;
+      --card: rgba(255, 248, 240, 0.94);
+      --accent: #c45c4a;
+      --accent2: #5c7c6a;
+      --text: #2a2220;
+      --muted: #6a5f5c;
+      --choice-bg: #fff;
+      --choice-border: #e8ddd4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Songti SC", "Noto Serif SC", "Georgia", serif;
+      background: linear-gradient(165deg, var(--bg1) 0%, var(--bg2) 45%, #1e2a24 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      overflow-x: hidden;
+    }
+    .shell {
+      width: 100%;
+      max-width: 520px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1.75rem 1.5rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08) inset;
+      min-height: 280px;
+    }
+    .stage-tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .narrative {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      margin-bottom: 1.25rem;
+      white-space: pre-wrap;
+    }
+    .question-illustration {
+      margin: -0.3rem 0 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #eadfd6;
+      background: #fffdf9;
+      aspect-ratio: 4 / 3;
+      display: none;
+    }
+    .question-illustration.show { display: block; }
+    .question-illustration img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 50%;
+      display: block;
+    }
+    /* 单题插画裁切微调：按用户反馈优化露出区域 */
+    .question-illustration.question-img-q2_child_family img { object-position: center 20%; }
+    .question-illustration.question-img-q3_primary_class img { object-position: center 68%; }
+    .question-illustration.question-img-q5_friend_rumor img { object-position: center 26%; }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    button.choice {
+      font-family: inherit;
+      text-align: left;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      border: 1px solid var(--choice-border);
+      border-radius: 10px;
+      background: var(--choice-bg);
+      cursor: pointer;
+      transition: border-color .15s, transform .1s, box-shadow .15s;
+    }
+    button.choice:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 14px rgba(196, 92, 74, .12);
+    }
+    button.choice:active { transform: scale(0.99); }
+    .progress {
+      margin-top: 1.25rem;
+      height: 3px;
+      background: rgba(0,0,0,.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress > i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #e8a090);
+      width: 0%;
+      transition: width .25s ease;
+    }
+    .footer-note {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,.55);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .result-title {
+      font-size: 1.55rem;
+      margin: 0 0 0.35rem;
+      color: #3d2f2a;
+      text-align: center;
+    }
+    .result-block {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #4a403c;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed #e0d5cc;
+    }
+    .result-block:last-of-type { border-bottom: none; }
+    .result-block h3 {
+      font-size: 1.12rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin: 0 0 0.4rem;
+      font-weight: 600;
+    }
+    .rarity-panel {
+      margin-top: -0.2rem;
+      margin-bottom: 0.95rem;
+      border: 1px solid #ead6c3;
+      border-radius: 12px;
+      background: #fff7ed;
+      padding: 0.8rem 0.82rem;
+    }
+    .rarity-line {
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: #4a3a34;
+    }
+    .rarity-line strong { color: #9f4c36; }
+    .rarity-tip {
+      margin-top: 0.34rem;
+      font-size: 0.78rem;
+      color: #7b6b63;
+    }
+    button.restart {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent2);
+      color: #fff;
+      cursor: pointer;
+    }
+    button.restart:hover { filter: brightness(1.08); }
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-top: 0.75rem;
+    }
+    button.btn-secondary {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      border: 1px solid #d8c9bc;
+      background: #fffdf9;
+      color: #4a403c;
+      cursor: pointer;
+    }
+    button.btn-secondary:hover {
+      border-color: var(--accent);
+      background: #fff8f2;
+    }
+    .toasts {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: rgba(35, 30, 28, 0.94);
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      animation: fadeOut 4.2s ease forwards;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    }
+    .toast.up { border-left: 4px solid #58b26d; }
+    .toast.down { border-left: 4px solid #d66262; }
+    .achievement-hud {
+      position: fixed;
+      left: 50%;
+      top: 14px;
+      transform: translate(-50%, -10px);
+      z-index: 52;
+      min-width: min(420px, calc(100vw - 28px));
+      max-width: calc(100vw - 28px);
+      border-radius: 12px;
+      padding: 0.68rem 0.84rem 0.72rem;
+      background: linear-gradient(135deg, rgba(255, 209, 95, 0.98), rgba(255, 152, 56, 0.96));
+      color: #3d2607;
+      border: 1px solid rgba(255, 245, 210, 0.95);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      gap: 0.65rem;
+      pointer-events: none;
+    }
+    .achievement-hud.show {
+      display: flex;
+      animation: hudPop 1.65s ease forwards;
+    }
+    .achievement-hud .icon {
+      width: 1.9rem;
+      height: 1.9rem;
+      border-radius: 999px;
+      background: rgba(255, 250, 232, 0.86);
+      border: 1px solid rgba(190, 110, 24, 0.35);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex: 0 0 auto;
+    }
+    .achievement-hud .main {
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .achievement-hud .sub {
+      margin-top: 0.18rem;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: rgba(61, 38, 7, 0.84);
+      letter-spacing: 0.01em;
+    }
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 10, 16, 0.65);
+      z-index: 40;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-mask.show { display: flex; }
+    .achievement-modal {
+      width: min(480px, 100%);
+      background: #fff9f2;
+      border-radius: 16px;
+      padding: 1.2rem 1rem;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+      border: 1px solid #f2dfca;
+    }
+    .achievement-title {
+      font-size: 1.1rem;
+      color: #a24b3b;
+      margin-bottom: 0.45rem;
+    }
+    .achievement-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #3b302b;
+    }
+    #ach-desc {
+      max-height: 42vh;
+      overflow-y: auto;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: #4d423d;
+    }
+    .achievement-note {
+      margin-top: 0.62rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid #f0d2ad;
+      background: #fff3e3;
+      color: #7a4a18;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+    .music-toggle {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 45;
+      border: none;
+      border-radius: 999px;
+      padding: 0.48rem 0.82rem;
+      background: rgba(255, 249, 242, 0.92);
+      color: #4a3b35;
+      font-family: inherit;
+      font-size: 0.82rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,.22);
+      cursor: pointer;
+    }
+    .achievements-toggle {
+      position: fixed;
+      top: 14px;
+      right: 112px;
+      z-index: 45;
+      border: none;
+      border-radius: 999px;
+      padding: 0.48rem 0.82rem;
+      background: rgba(255, 249, 242, 0.92);
+      color: #4a3b35;
+      font-family: inherit;
+      font-size: 0.82rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,.22);
+      cursor: pointer;
+    }
+    .chapter-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 46;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(20,16,30,.28), rgba(20,16,30,.55));
+    }
+    .chapter-overlay.show { display: flex; animation: chapterFade 0.9s ease forwards; }
+    .chapter-pill {
+      color: #fff8f0;
+      background: rgba(35, 30, 45, 0.82);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      padding: 0.7rem 1.1rem;
+      font-size: 0.9rem;
+      letter-spacing: .04em;
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+    }
+    .result-hero {
+      border-radius: 16px;
+      padding: 1rem .9rem;
+      margin-bottom: 1rem;
+      color: #4a403c;
+      display: grid;
+      gap: .5rem;
+      background: #f5fbf8;
+      border: 1px solid #e0ece6;
+    }
+    .result-hero-kicker {
+      font-size: 0.95rem;
+      color: #65736c;
+      text-align: center;
+    }
+    .result-hero-alias {
+      font-size: 0.98rem;
+      line-height: 1.65;
+      text-align: center;
+      color: #5e524b;
+      margin: -0.15rem auto 0.2rem;
+      max-width: 92%;
+    }
+    .result-hero-media {
+      width: 70%;
+      margin: 0 auto;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #e8ece8;
+    }
+    .result-hero-media img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+    }
+    .sticker-pack {
+      border: 1px solid #eadfd6;
+      border-radius: 12px;
+      background: #fffdfa;
+      padding: 0.72rem 0.72rem 0.8rem;
+    }
+    .sticker-pack img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      border: 1px solid #eee2d8;
+      background: #fff;
+    }
+    .badge-wall {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-top: .35rem;
+    }
+    .badge-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .8rem;
+      border-radius: 999px;
+      padding: .24rem .55rem;
+      background: #fff;
+      border: 1px solid #eadbcf;
+      color: #4a403c;
+    }
+    .ach-wall-list {
+      display: flex;
+      flex-direction: column;
+      gap: .65rem;
+      max-height: 58vh;
+      overflow: auto;
+      padding-right: .3rem;
+    }
+    .ach-row {
+      border: 1px solid #ecd9cc;
+      border-radius: 10px;
+      padding: .55rem .65rem;
+      background: #fffdf9;
+    }
+    .ach-row .name {
+      font-size: .92rem;
+      font-weight: 700;
+      color: #4a3b35;
+    }
+    .ach-row .hint {
+      font-size: .8rem;
+      line-height: 1.55;
+      color: #655955;
+      margin-top: .25rem;
+    }
+    .ach-row.unlocked {
+      border-color: #cde6d4;
+      background: #f5fff8;
+    }
+    .radar-wrap {
+      margin-top: .35rem;
+      display: flex;
+      justify-content: center;
+    }
+    #radar-chart {
+      width: 100%;
+      max-width: 350px;
+      height: 260px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #f0e3d8;
+    }
+    @keyframes chapterFade {
+      0% { opacity: 0; }
+      15% { opacity: 1; }
+      75% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes fadeOut {
+      0% { opacity: 0; transform: translateY(8px); }
+      8% { opacity: 1; transform: translateY(0); }
+      82% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-8px); }
+    }
+    @keyframes hudPop {
+      0% { opacity: 0; transform: translate(-50%, -12px) scale(0.94); }
+      12% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      80% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -8px) scale(0.97); }
+    }
+    body.summary-screen #stat-dock,
+    body.summary-screen #stat-dock-reopen { display: none; }
+    body.stat-dock-collapsed #stat-dock { display: none; }
+    body.stat-dock-collapsed #stat-dock-reopen { display: inline-flex; }
+    .stat-dock {
+      width: 100%;
+      margin-top: 0.7rem;
+      background: rgba(28, 22, 30, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 9px 7px;
+      color: #fff8f2;
+      font-size: 0.7rem;
+      box-shadow: none;
+      pointer-events: none;
+    }
+    .stat-dock-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .stat-dock-title {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      opacity: 0.9;
+      margin-bottom: 0;
+    }
+    .stat-dock-toggle {
+      pointer-events: auto;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: #f3ece6;
+      border-radius: 999px;
+      font-size: 0.6rem;
+      padding: 0.12rem 0.45rem;
+      line-height: 1.3;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .stat-dock-toggle:hover { background: rgba(255, 255, 255, 0.14); }
+    #stat-dock-reopen {
+      position: fixed;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 38;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(28, 22, 30, 0.9);
+      color: #fff8f2;
+      border-radius: 999px;
+      padding: 0.38rem 0.58rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .stat-dock-log-title {
+      margin-top: 7px;
+      padding-top: 5px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.62rem;
+      opacity: 0.75;
+      letter-spacing: 0.08em;
+    }
+    .stat-row { margin-bottom: 6px; }
+    .stat-row-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 3px;
+    }
+    .stat-row-name { font-weight: 600; }
+    .stat-row-val { font-variant-numeric: tabular-nums; opacity: 0.95; }
+    .stat-bar-bg {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.35s ease, background 0.25s ease;
+      background: #7aa68f;
+    }
+    .stat-row.flash .stat-bar-fill {
+      filter: brightness(1.15);
+    }
+    .stat-dock-log {
+      max-height: 72px;
+      overflow: hidden;
+      font-size: 0.62rem;
+      line-height: 1.45;
+      opacity: 0.92;
+    }
+    .stat-dock-log div {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stat-dock-log .pos { color: #9fe3b0; }
+    .stat-dock-log .neg { color: #ffb3a7; }
+    .stat-dock-log .mix { color: #f5d7b2; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card" id="app"></div>
+    <aside id="stat-dock" class="stat-dock" aria-label="本局属性">
+      <div class="stat-dock-head">
+        <div class="stat-dock-title">本局属性</div>
+        <button type="button" id="stat-dock-toggle" class="stat-dock-toggle">收起</button>
+      </div>
+      <div id="stat-dock-rows"></div>
+      <div class="stat-dock-log-title">最近变化</div>
+      <div id="stat-dock-log" class="stat-dock-log"></div>
+    </aside>
+    <button type="button" id="stat-dock-reopen">属性</button>
+    <p class="footer-note">本页面为娱乐化情景问卷，不构成心理诊断或职业建议。敏感处境请优先寻求现实支持与专业帮助。</p>
+  </div>
+  <div class="toasts" id="toasts"></div>
+  <div class="achievement-hud" id="achievement-hud" aria-live="polite"></div>
+  <div class="modal-mask" id="achievement-mask">
+    <div class="achievement-modal">
+      <div class="achievement-title">成就解锁</div>
+      <div class="achievement-name" id="ach-name"></div>
+      <div id="ach-desc"></div>
+      <button id="ach-close" style="margin-top:1rem;width:100%;padding:.7rem;border:none;border-radius:10px;background:#5c7c6a;color:#fff;font-family:inherit;cursor:pointer;">继续</button>
+    </div>
+  </div>
+  <button id="music-toggle" class="music-toggle">BGM：开启</button>
+  <button id="achievements-toggle" class="achievements-toggle">成就墙</button>
+  <div id="chapter-overlay" class="chapter-overlay"><div id="chapter-pill" class="chapter-pill"></div></div>
+  <div class="modal-mask" id="ach-wall-mask">
+    <div class="achievement-modal">
+      <div class="achievement-title">成就墙总览</div>
+      <div id="ach-wall-list" class="ach-wall-list"></div>
+      <button id="ach-wall-close" style="margin-top:1rem;width:100%;padding:.7rem;border:none;border-radius:10px;background:#5c7c6a;color:#fff;font-family:inherit;cursor:pointer;">关闭</button>
+    </div>
+  </div>
+  <script src="./graph-inline.js"></script>
+  <script>
+    let graph = null;
+    let nodesById = {};
+    let stats = {};
+    let flags = {};
+    let counters = {};
+    let history = [];
+    let unlockedAchievements = [];
+    let currentNodeId = null;
+    let lastChapter = "";
+    let progressTotalSteps = 10;
+    const STAT_LABELS = {
+      logic: "逻辑",
+      eq: "情商",
+      stress: "压力",
+      discipline: "自律",
+      social: "社交",
+      stamina: "体力"
+    };
+    let audioCtx = null;
+    let bgmEnabled = false;
+    let bgmTimer = null;
+    let currentChapterMusic = "";
+    let statDockLog = [];
+    let achievementHudTimer = null;
+    let achievementQueue = [];
+    let rarityUnlocked = false;
+    const QUESTION_IMAGE_MAP = {
+      q1_birth: "./assets/question-1.png",
+      q2_child_family: "./assets/question-2.png",
+      q3_primary_class: "./assets/question-3.png",
+      q4_middle_misunderstood: "./assets/question-4.png",
+      q5_friend_rumor: "./assets/question-5.png",
+      q6_high_selfstudy: "./assets/question-6.png",
+      q7_high_phone: "./assets/question-7.png",
+      q8_college_major: "./assets/question-8.png",
+      q9_college_club: "./assets/question-9.png",
+      q10_college_hiking: "./assets/question-10.png",
+      q10b_hiking_branch: "./assets/question-11.png",
+      q11_exam_night: "./assets/question-12.png",
+      q12_intern_offer: "./assets/question-13.png",
+      q13_work_overtime: "./assets/question-14.png",
+      q14_work_blame: "./assets/question-15.png",
+      q15_work_presentation: "./assets/question-16.png",
+      q16_weekend_restore: "./assets/question-17.png"
+    };
+
+    function escapeHtml(t) {
+      const d = document.createElement("div");
+      d.textContent = t || "";
+      return d.innerHTML;
+    }
+
+    function toast(text, isUp = true) {
+      const wrap = document.getElementById("toasts");
+      const div = document.createElement("div");
+      div.className = `toast ${isUp ? "up" : "down"}`;
+      div.textContent = text;
+      wrap.appendChild(div);
+      setTimeout(() => div.remove(), 4400);
+    }
+
+    function showAchievementModal(ach) {
+      document.getElementById("ach-name").textContent = ach.name;
+      document.getElementById("ach-desc").textContent = ach.description;
+      showAchievementHud(ach.name);
+      document.getElementById("achievement-mask").classList.add("show");
+      playCoinSound();
+    }
+
+    function showNextAchievementModal() {
+      const mask = document.getElementById("achievement-mask");
+      if (mask.classList.contains("show")) return;
+      if (!achievementQueue.length) return;
+      const ach = achievementQueue.shift();
+      if (ach) showAchievementModal(ach);
+    }
+
+    function showAchievementHud(name) {
+      const hud = document.getElementById("achievement-hud");
+      if (!hud) return;
+      hud.innerHTML = `
+        <span class="icon">🪙</span>
+        <div>
+          <div class="main">成就 +1：${escapeHtml(name)}</div>
+        </div>
+      `;
+      hud.classList.remove("show");
+      void hud.offsetWidth;
+      hud.classList.add("show");
+      clearTimeout(achievementHudTimer);
+      achievementHudTimer = setTimeout(() => hud.classList.remove("show"), 1650);
+    }
+
+    function hideAchievementModal() {
+      document.getElementById("achievement-mask").classList.remove("show");
+      showNextAchievementModal();
+    }
+
+    function showAchievementWall() {
+      if (!graph) return;
+      const list = document.getElementById("ach-wall-list");
+      const rows = (graph.achievements || []).map((ach) => {
+        const unlocked = unlockedAchievements.includes(ach.id);
+        const status = unlocked ? "✅ 已解锁" : "🔒 未解锁";
+        return `
+          <div class="ach-row ${unlocked ? "unlocked" : ""}">
+            <div class="name">${escapeHtml(ach.name)} · ${status}</div>
+            <div class="hint">${escapeHtml(ach.description || "")}</div>
+            <div class="hint"><strong>获取方式：</strong>${escapeHtml(ach.unlock_hint || "探索剧情分支触发")}</div>
+          </div>
+        `;
+      }).join("");
+      list.innerHTML = rows || `<div class="ach-row"><div class="hint">暂无成就配置</div></div>`;
+      document.getElementById("ach-wall-mask").classList.add("show");
+    }
+
+    function hideAchievementWall() {
+      document.getElementById("ach-wall-mask").classList.remove("show");
+    }
+
+    function evalNodeCondition(cond) {
+      if (cond.flag) return flags[cond.flag] === cond.equals;
+      if (cond.counter) {
+        const v = counters[cond.counter] || 0;
+        if (cond.op === ">=") return v >= cond.value;
+        if (cond.op === ">") return v > cond.value;
+        if (cond.op === "==") return v === cond.value;
+        if (cond.op === "<=") return v <= cond.value;
+        if (cond.op === "<") return v < cond.value;
+      }
+      return true;
+    }
+
+    function nodeAllowed(node) {
+      const conds = node.conditions || [];
+      return conds.every(evalNodeCondition);
+    }
+
+    function evalAchievementCondition(cond) {
+      if (cond.flag !== undefined && cond.equals !== undefined) {
+        return flags[cond.flag] === cond.equals;
+      }
+      if (cond.stat) {
+        const v = stats[cond.stat] || 0;
+        if (cond.op === ">=") return v >= cond.value;
+        if (cond.op === ">") return v > cond.value;
+        if (cond.op === "==") return v === cond.value;
+        if (cond.op === "<=") return v <= cond.value;
+        if (cond.op === "<") return v < cond.value;
+        return false;
+      }
+      if (cond.counter) {
+        const v = counters[cond.counter] || 0;
+        if (cond.op === ">=") return v >= cond.value;
+        if (cond.op === ">") return v > cond.value;
+        if (cond.op === "==") return v === cond.value;
+        if (cond.op === "<=") return v <= cond.value;
+        if (cond.op === "<") return v < cond.value;
+        return false;
+      }
+      if (cond.node && cond.option_text_includes) {
+        return history.some(
+          (x) => x.node_id === cond.node && x.option_text.includes(cond.option_text_includes)
+        );
+      }
+      return false;
+    }
+
+    function checkAchievements() {
+      for (const ach of graph.achievements || []) {
+        if (unlockedAchievements.includes(ach.id)) continue;
+        const ok = (ach.conditions || []).every(evalAchievementCondition);
+        if (ok) {
+          unlockedAchievements.push(ach.id);
+          toast(`成就解锁：${ach.name}`, true);
+          // 每次选择仅弹出 1 个新成就，避免提示堆叠影响体验
+          achievementQueue.push(ach);
+          showNextAchievementModal();
+          break;
+        }
+      }
+    }
+
+    function statBarPct(v) {
+      return Math.max(4, Math.min(100, Math.round(((Number(v) + 6) / 22) * 100)));
+    }
+
+    function renderStatDockLog() {
+      const el = document.getElementById("stat-dock-log");
+      if (!el) return;
+      if (!statDockLog.length) {
+        el.innerHTML = "<div style=\"opacity:.55\">暂无加减记录</div>";
+        return;
+      }
+      el.innerHTML = statDockLog
+        .map((e) => `<div class="${escapeHtml(e.cls)}">${escapeHtml(e.text)}</div>`)
+        .join("");
+    }
+
+    function setStatDockCollapsed(collapsed) {
+      document.body.classList.toggle("stat-dock-collapsed", !!collapsed);
+      const btn = document.getElementById("stat-dock-toggle");
+      if (btn) btn.textContent = collapsed ? "展开" : "收起";
+      try {
+        localStorage.setItem("statDockCollapsed", collapsed ? "1" : "0");
+      } catch (e) {}
+    }
+
+    function renderStatDock(flashKeys) {
+      const rows = document.getElementById("stat-dock-rows");
+      if (!rows) return;
+      const order = ["eq", "logic", "discipline", "social", "stamina", "stress"];
+      const fk = flashKeys || new Set();
+      rows.innerHTML = order
+        .map((k) => {
+          const v = stats[k] || 0;
+          const pct = statBarPct(v);
+          const flash = fk.has(k) ? " flash" : "";
+          return `<div class="stat-row${flash}" data-stat-k="${k}">
+            <div class="stat-row-head"><span class="stat-row-name">${STAT_LABELS[k]}</span><span class="stat-row-val">${v}</span></div>
+            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%"></div></div>
+          </div>`;
+        })
+        .join("");
+      if (fk.size) {
+        setTimeout(() => {
+          fk.forEach((k) => {
+            const row = rows.querySelector(`[data-stat-k="${k}"]`);
+            if (row) row.classList.remove("flash");
+          });
+        }, 420);
+      }
+    }
+
+    function applyOption(option, nodeId) {
+      const d = option.stat_changes || {};
+      const changedKeys = new Set();
+      Object.keys(d).forEach((k) => {
+        const before = stats[k] || 0;
+        stats[k] = before + d[k];
+        changedKeys.add(k);
+        const sign = d[k] >= 0 ? "+" : "";
+        const isUp = d[k] >= 0;
+        const label = STAT_LABELS[k] || k;
+        toast(`${label} ${sign}${d[k]}`, isUp);
+      });
+      if (Object.keys(d).length) {
+        const vals = Object.values(d);
+        let cls = "mix";
+        if (vals.every((x) => x >= 0)) cls = "pos";
+        else if (vals.every((x) => x <= 0)) cls = "neg";
+        const text = Object.keys(d)
+          .map((k) => `${STAT_LABELS[k] || k} ${d[k] >= 0 ? "+" : ""}${d[k]}`)
+          .join(" · ");
+        statDockLog.unshift({ text, cls });
+        statDockLog = statDockLog.slice(0, 12);
+        renderStatDockLog();
+      }
+      renderStatDock(changedKeys);
+
+      const fd = option.flag_changes || {};
+      Object.keys(fd).forEach((k) => { flags[k] = fd[k]; });
+
+      const cd = option.counter_changes || {};
+      Object.keys(cd).forEach((k) => { counters[k] = (counters[k] || 0) + cd[k]; });
+
+      counters.steps_taken = (counters.steps_taken || 0) + 1;
+
+      history.push({
+        node_id: nodeId,
+        option_text: option.text
+      });
+    }
+
+    function allStatsSnapshot() {
+      const order = ["logic", "eq", "stress", "discipline", "social", "stamina"];
+      return order.map((k) => [k, stats[k] || 0]);
+    }
+
+    function computeLongestStepsToTerminal(startId) {
+      const memo = {};
+      const visiting = new Set();
+      function dfs(nodeId) {
+        if (graph.terminal_nodes.includes(nodeId)) return 0;
+        if (memo[nodeId] !== undefined) return memo[nodeId];
+        if (visiting.has(nodeId)) return 0;
+        visiting.add(nodeId);
+        const node = nodesById[nodeId];
+        if (!node || !(node.options || []).length) {
+          visiting.delete(nodeId);
+          memo[nodeId] = 0;
+          return 0;
+        }
+        let best = 0;
+        for (const op of node.options || []) {
+          best = Math.max(best, dfs(op.next_id));
+        }
+        visiting.delete(nodeId);
+        memo[nodeId] = 1 + best;
+        return memo[nodeId];
+      }
+      return Math.max(1, dfs(startId));
+    }
+
+    function renderResult() {
+      document.body.classList.add("summary-screen");
+      const app = document.getElementById("app");
+      const allStats = allStatsSnapshot();
+      const achNames = unlockedAchievements
+        .map((id) => (graph.achievements || []).find((a) => a.id === id))
+        .filter(Boolean)
+        .map((a) => a.name);
+      const personality = buildPersonalityReport();
+      const personalityImagePath = getPersonalityImagePath(personality.title);
+      const personalityStickerPath = getPersonalityStickerPath(personality.title);
+      const personalityAlias = getPersonalityAlias(personality.title);
+      const rarity = getPersonalityRarity(personality.title);
+      const family = buildFamilyReport();
+      const career = buildCareerReport();
+      const finalBadge = buildFinalBadge(achNames);
+      const achievementBadges = buildAchievementBadges(achNames);
+      app.innerHTML = `
+        <div class="stage-tag">终章 · 分岔汇总</div>
+        <div class="result-hero">
+          <div class="result-hero-kicker">你的人格类型是：</div>
+          <h1 class="result-title">${escapeHtml(personality.title)}</h1>
+          <div class="result-hero-alias">${escapeHtml(personalityAlias)}</div>
+          <div class="result-hero-media">
+            <img src="${encodeURI(personalityImagePath)}" alt="${escapeHtml(personality.title)} 插画" onerror="this.closest('.result-hero-media').style.display='none';" />
+          </div>
+        </div>
+        <div class="result-block">
+          <h3>人格分析报告</h3>
+          ${escapeHtml(personality.body)}
+        </div>
+        <div class="rarity-panel">
+          <div class="rarity-line" id="rarity-line">
+            ${rarityUnlocked
+              ? `你的人格在人群中的稀有度是 <strong>${escapeHtml(rarity)}</strong>`
+              : "你的人格在人群中的稀有度是 <strong>???</strong>（点击分享即可解锁）"}
+          </div>
+          <div class="rarity-tip">分享文案会自动带上人格类型与占比。</div>
+        </div>
+        <div class="result-block">
+          <h3>原生家庭与成长模式</h3>
+          ${escapeHtml(family)}
+        </div>
+        <div class="result-block">
+          <h3>成就墙</h3>
+          ${escapeHtml(achNames.length ? achNames.join("、") : "暂无隐藏成就")}
+          ${achievementBadges}
+        </div>
+        <div class="result-block">
+          <h3>终局趣味称号</h3>
+          ${escapeHtml(finalBadge)}
+        </div>
+        <div class="result-block">
+          <h3>职业与未来倾向</h3>
+          ${escapeHtml(career)}
+        </div>
+        <div class="result-block">
+          <h3>属性快照</h3>
+          ${escapeHtml(allStats.map(([k, v]) => `${STAT_LABELS[k] || k}: ${v}`).join(" · ") || "暂无")}
+          <div class="radar-wrap"><canvas id="radar-chart" width="350" height="260"></canvas></div>
+        </div>
+        ${personalityStickerPath ? `
+          <div class="result-block">
+            <h3>专属人格表情包</h3>
+            <div class="sticker-pack">
+              <img src="${encodeURI(personalityStickerPath)}" alt="${escapeHtml(personality.title)} 表情包" onerror="this.closest('.result-block').style.display='none';" />
+            </div>
+          </div>
+        ` : ""}
+        <div class="btn-row">
+          <button type="button" class="btn-secondary" id="share-unlock">${rarityUnlocked ? "再次分享" : "分享解锁稀有度"}</button>
+          <button type="button" class="btn-secondary" id="export-report">导出本局报告（Markdown，含雷达图）</button>
+          <button type="button" class="btn-secondary" id="export-radar-png">单独导出雷达图（PNG）</button>
+          <button type="button" class="restart" id="restart">再玩一次</button>
+        </div>
+      `;
+      drawRadarChart();
+      renderStatDock(new Set());
+      renderStatDockLog();
+    }
+
+    function reportTimestamp() {
+      const d = new Date();
+      const p = (n) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+    }
+
+    function mdEscape(s) {
+      if (!s) return "";
+      return String(s).replace(/\|/g, "\\|").replace(/\r?\n/g, "  \n");
+    }
+
+    function getPersonalityRarity(title) {
+      const maps = {
+        "佛系带刺仙人掌": "23.8%",
+        "Super人形碎纸机": "6.4%",
+        "中译中大师. Pro Max": "8.9%",
+        "Transform. 跳跳糖! ": "9.6%",
+        "逻辑满满的棉花糖": "12.1%",
+        "气氛组柴油机": "11.4%",
+        "拼豆排布指挥官": "10.2%",
+        "情绪海绵宝宝": "9.8%",
+        "慢炖老母鸡": "7.8%"
+      };
+      return maps[title] || "12.0%";
+    }
+
+    async function shareResultAndUnlockRarity() {
+      const personality = buildPersonalityReport();
+      const rarity = getPersonalityRarity(personality.title);
+      const shareText = `我在MeMeTi中测试出来的人格是${personality.title}, 仅占全部人群的${rarity}, 你也来试试吧(✿◡‿◡) 💖`;
+      const shareUrl = `${location.origin}${location.pathname}`;
+      let shared = false;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "MeMeTi——人生分岔路",
+            text: shareText,
+            url: shareUrl
+          });
+          shared = true;
+        } catch (err) {
+          shared = false;
+        }
+      }
+      if (!shared) {
+        try {
+          await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+          toast("分享文案已复制，去微信粘贴即可", true);
+          shared = true;
+        } catch (err) {
+          const tmp = document.createElement("textarea");
+          tmp.value = `${shareText}\n${shareUrl}`;
+          tmp.style.position = "fixed";
+          tmp.style.opacity = "0";
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand("copy");
+          tmp.remove();
+          toast("分享文案已复制，去微信粘贴即可", true);
+          shared = true;
+        }
+      }
+      if (shared && !rarityUnlocked) {
+        rarityUnlocked = true;
+        const line = document.getElementById("rarity-line");
+        const btn = document.getElementById("share-unlock");
+        if (line) line.innerHTML = `你的人格在人群中的稀有度是 <strong>${escapeHtml(rarity)}</strong>`;
+        if (btn) btn.textContent = "再次分享";
+        toast(`稀有度已解锁：${rarity}`, true);
+      }
+    }
+
+    function buildReportMarkdown(radarDataUrl) {
+      const personality = buildPersonalityReport();
+      const family = buildFamilyReport();
+      const career = buildCareerReport();
+      const achNames = unlockedAchievements
+        .map((id) => (graph.achievements || []).find((a) => a.id === id))
+        .filter(Boolean)
+        .map((a) => a.name);
+      const finalBadge = buildFinalBadge(achNames);
+      const statLines = ["logic", "eq", "stress", "discipline", "social", "stamina"]
+        .map((k) => `- **${STAT_LABELS[k]}**：${stats[k] || 0}`)
+        .join("\n");
+      const counterLines = Object.keys(counters).length
+        ? Object.entries(counters).map(([k, v]) => `- **${k}**：${v}`).join("\n")
+        : "_（无计数器记录）_";
+      const achSection = (graph.achievements || [])
+        .map((ach) => {
+          const ok = unlockedAchievements.includes(ach.id);
+          return `### ${ach.name} ${ok ? "✅ 已解锁" : "🔒 未解锁"}\n\n${mdEscape(ach.description || "")}\n\n**获取方式：** ${mdEscape(ach.unlock_hint || "探索剧情分支触发")}\n`;
+        })
+        .join("\n");
+      const historyLines = history.length
+        ? history.map((h, i) => `${i + 1}. \`${h.node_id}\` → ${mdEscape(h.option_text)}`).join("\n")
+        : "_（无选择记录）_";
+      const radarMd = radarDataUrl
+        ? `\n![人格六边形雷达图](${radarDataUrl})\n`
+        : "\n_（雷达图导出失败，可改用「单独导出雷达图」）_\n";
+      return `# 人生分岔路 · 本局报告\n\n**导出时间：** ${new Date().toLocaleString("zh-CN")}\n\n---\n\n## 人格标题\n\n**${mdEscape(personality.title)}**\n\n${mdEscape(personality.body)}\n\n---\n\n## 原生家庭与成长模式\n\n${mdEscape(family)}\n\n---\n\n## 职业与未来倾向\n\n${mdEscape(career)}\n\n---\n\n## 终局趣味称号\n\n${mdEscape(finalBadge)}\n\n---\n\n## 属性数值（本局累计）\n\n${statLines}\n\n---\n\n## 行为计数器\n\n${counterLines}\n\n---\n\n## 成就墙（含获取方式）\n\n${achSection}\n\n---\n\n## 选择历程\n\n${historyLines}\n\n---\n\n## 人格六边形（雷达图）\n${radarMd}\n\n---\n\n> 本报告由《人生分岔路》自动生成，仅供娱乐参考，不构成心理诊断或职业建议。\n`;
+    }
+
+    function downloadBlob(filename, blob) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }
+
+    function exportReportMarkdown() {
+      const canvas = document.getElementById("radar-chart");
+      let dataUrl = "";
+      try {
+        if (canvas) dataUrl = canvas.toDataURL("image/png");
+      } catch (err) {
+        dataUrl = "";
+      }
+      const md = buildReportMarkdown(dataUrl);
+      const stamp = reportTimestamp();
+      const blob = new Blob(["\ufeff", md], { type: "text/markdown;charset=utf-8" });
+      downloadBlob(`人生分岔路-本局报告-${stamp}.md`, blob);
+      toast("已下载 Markdown 报告", true);
+    }
+
+    function exportRadarPng() {
+      const canvas = document.getElementById("radar-chart");
+      if (!canvas) {
+        toast("未找到雷达图", false);
+        return;
+      }
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          toast("雷达图导出失败", false);
+          return;
+        }
+        downloadBlob(`人生分岔路-雷达图-${reportTimestamp()}.png`, blob);
+        toast("已下载雷达图 PNG", true);
+      }, "image/png");
+    }
+
+    function drawRadarChart() {
+      const canvas = document.getElementById("radar-chart");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const labels = ["逻辑", "情商", "自律", "社交", "体力", "抗压"];
+      const keys = ["logic", "eq", "discipline", "social", "stamina", "stress"];
+      const values = keys.map((k) => Math.max(0, Math.min(10, (stats[k] || 0) + 3)));
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2 + 8;
+      const radius = 86;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#e8ddd2";
+      for (let r = 1; r <= 5; r++) {
+        const rr = (radius * r) / 5;
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const a = -Math.PI / 2 + (Math.PI * 2 * i) / 6;
+          const x = cx + Math.cos(a) * rr;
+          const y = cy + Math.sin(a) * rr;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+      for (let i = 0; i < 6; i++) {
+        const a = -Math.PI / 2 + (Math.PI * 2 * i) / 6;
+        const x = cx + Math.cos(a) * radius;
+        const y = cy + Math.sin(a) * radius;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        const lx = cx + Math.cos(a) * (radius + 18);
+        const ly = cy + Math.sin(a) * (radius + 18);
+        ctx.fillStyle = "#5a4e49";
+        ctx.font = "12px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(labels[i], lx, ly);
+      }
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a = -Math.PI / 2 + (Math.PI * 2 * i) / 6;
+        const rr = (radius * values[i]) / 10;
+        const x = cx + Math.cos(a) * rr;
+        const y = cy + Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = "rgba(196, 92, 74, 0.28)";
+      ctx.strokeStyle = "rgba(196, 92, 74, 0.95)";
+      ctx.lineWidth = 2;
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    function buildAchievementBadges(achNames) {
+      const iconMap = {
+        "废学忘习的寝食": "🍜",
+        "ADE绝地武士": "🛸",
+        "旷野浪游者": "🌄",
+        "气氛扛把子": "🎤",
+        "自律卷轴持有人": "📜",
+        "人间扩音器": "📣",
+        "高压锅本锅": "🫖",
+        "双核处理器": "🧠",
+        "迂回式破局手": "🪢",
+        "冲突绝缘体": "🕊️",
+        "逻辑怪兽幼体": "🦖",
+        "无效沟通大师": "🧨",
+        "薏仁做事薏仁汤": "🥣",
+        "我的一生如绿豆冰": "🧊",
+        "你有没有为一个人苹果命": "🍎",
+        "油爆琵琶伴着面": "🍜",
+        "世界以痛吻我我以待以待呦": "🫶",
+        "不错不错真不错": "🛝",
+        "盎然春天": "🌸",
+        "周末发明家": "🛏️",
+        "王不见王": "👑",
+        "上帝在天上我在地上": "☁️",
+        "六十米博尔特": "🏃",
+        "笨鸟先飞还是避我锋芒": "🪶",
+        "一出生就在中原": "🗺️",
+        "主角光环体质": "✨",
+        "天下英雄我是钓系": "🎣",
+        "猴子见了也叫哥": "🐒",
+        "爱迪生只按开关": "💡",
+        "万有引力翻个书": "📖",
+        "幼儿园三百首预备役": "📚"
+      };
+      if (!achNames.length) {
+        return `<div class="badge-wall"><span class="badge-chip">🎖️ 徽章位已预留（等你解锁）</span></div>`;
+      }
+      const html = achNames.map((name) => {
+        const icon = iconMap[name] || "✨";
+        return `<span class="badge-chip">${icon} ${escapeHtml(name)}</span>`;
+      }).join("");
+      return `<div class="badge-wall">${html}</div>`;
+    }
+
+    function stageToChapter(stage) {
+      if (!stage) return "";
+      const chapter = stage.split("·")[0].trim();
+      return chapter;
+    }
+
+    function showChapterOverlay(chapter) {
+      if (!chapter || chapter === lastChapter) return;
+      lastChapter = chapter;
+      const overlay = document.getElementById("chapter-overlay");
+      const pill = document.getElementById("chapter-pill");
+      pill.textContent = `章节切换：${chapter}`;
+      overlay.classList.remove("show");
+      // force reflow for restart
+      void overlay.offsetWidth;
+      overlay.classList.add("show");
+      setTimeout(() => overlay.classList.remove("show"), 900);
+    }
+
+    function buildPersonalityReport() {
+      const l = stats.logic || 0;
+      const e = stats.eq || 0;
+      const d = stats.discipline || 0;
+      const s = stats.stress || 0;
+      const social = stats.social || 0;
+      const stamina = stats.stamina || 0;
+      let title = "佛系带刺仙人掌";
+      let body = "你习惯先观察再行动，像一株扎根在迷宫中央的仙人掌——不主动扎人，但谁想拔你，得先问问自己掌心够不够厚。";
+      if (l >= 8 && d >= 8) {
+        title = "Super人形碎纸机";
+        body = "任务到你手里就像自动排队跳进碎纸机的文件，你只需要闭眼按一下开关，连拖延症都能被切成均匀的意大利面。";
+      } else if (e >= 8 && social >= 7) {
+        title = "中译中大师. Pro Max";
+        body = "你能接收0.5赫兹的情绪电波，别人的‘没事’在你耳朵里会自动加粗、标红、弹幕刷屏，还顺手配了三张表情包。";
+      } else if (s >= 8 && d >= 6) {
+        title = "Transform. 跳跳糖! ";
+        body = "别人在压力下变爆米花，你在压力下变成跳跳糖——越压越嗨，蹦跶着把任务搞定!";
+      } else if (l >= 7 && e >= 7) {
+        title = "逻辑满满的棉花糖";
+        body = "你就像一颗夹心棉花糖——外层软糯好捏，咬下去全是逻辑馅料。吵架时不哭不闹不掀桌，而是默默拉个表格，把情绪和道理分两列排好，最后还不忘加一句“你看这样是不是双赢。";
+      } else if (social >= 8 && stamina >= 7) {
+        title = "气氛组柴油机";
+        body = "你是那种把冷场火锅搅成沸腾麻辣锅的汤勺，自带BGM和节奏推土机。";
+      } else if (d >= 7 && s <= 3) {
+        title = "拼豆排布指挥官";
+        body = "爱拼才会赢! 给你一堆积木，你能按颜色、形状甚至气味分类，世界在你手里就像被熨斗烫过的床单。";
+      } else if (e >= 7 && s >= 7) {
+        title = "情绪海绵宝宝";
+        body = "你是一块会走路的情感海绵，吸走别人的眼泪，自己却偷偷拧出水来浇花。";
+      } else if (stamina >= 8 && d >= 6) {
+        title = "慢炖老母鸡";
+        body = "你不追求速溶咖啡的瞬间香浓，而是像炖汤一样慢慢释放能量，越久越入味。";
+      }
+      return { title, body };
+    }
+
+    function getPersonalityImagePath(title) {
+      const maps = {
+        "佛系带刺仙人掌": "./assets/佛系带刺仙人掌.png",
+        "Super人形碎纸机": "./assets/Super人形碎纸机.png",
+        "中译中大师. Pro Max": "./assets/中译中大师. Pro Max.png",
+        "Transform. 跳跳糖! ": "./assets/Transform. 跳跳糖!.png",
+        "逻辑满满的棉花糖": "./assets/逻辑满满的棉花糖.png",
+        "气氛组柴油机": "./assets/气氛组柴油机.png",
+        "拼豆排布指挥官": "./assets/拼豆排布指挥官.png",
+        "情绪海绵宝宝": "./assets/情绪海绵宝宝.png",
+        "慢炖老母鸡": "./assets/慢炖老母鸡.png"
+      };
+      return maps[title] || `./assets/${title}.png`;
+    }
+
+    function getPersonalityStickerPath(title) {
+      const maps = {
+        "佛系带刺仙人掌": "./assets/sticker-佛系带刺仙人掌.png",
+        "Super人形碎纸机": "./assets/sticker-Super人形碎纸机.png",
+        "中译中大师. Pro Max": "./assets/sticker-中译中大师. Pro Max.png",
+        "逻辑满满的棉花糖": "./assets/sticker-逻辑满满的棉花糖.png",
+        "拼豆排布指挥官": "./assets/sticker-拼豆排布指挥官.png",
+        "情绪海绵宝宝": "./assets/sticker-情绪海绵宝宝.png"
+      };
+      return maps[title] || "";
+    }
+
+    function getPersonalityAlias(title) {
+      const maps = {
+        "Super人形碎纸机": "任务到你手里就像自动排队跳进碎纸机的文件",
+        "中译中大师. Pro Max": "你能接收0.5赫兹的情绪电波",
+        "Transform. 跳跳糖! ": "你在压力下变成跳跳糖",
+        "逻辑满满的棉花糖": "表层软糯好捏，咬下去全是逻辑馅料",
+        "气氛组柴油机": "把冷场火锅搅成沸腾麻辣锅的汤勺",
+        "拼豆排布指挥官": "拼豆人,爱拼才会赢!",
+        "情绪海绵宝宝": "吸走的眼泪能浇出鲜花",
+        "慢炖老母鸡": "“煮”(处)的越久越香醇",
+        "佛系带刺仙人掌": "不主动扎人, 但默默迎击所有来犯的恶意"
+      };
+      return maps[title] || "";
+    }
+
+    function buildFamilyReport() {
+      const e = stats.eq || 0;
+      const s = stats.stress || 0;
+      const l = stats.logic || 0;
+      if (e >= 8 && l >= 6) {
+        return "你更容易形成“先理解再表达”的家庭互动模式：既能顾及关系，也会保留自己的主见。";
+      }
+      if (s >= 7) {
+        return "你在成长中更容易把情绪往内收，关键节点表现出“先扛住再处理”的应对习惯。";
+      }
+      return "你的成长轨迹偏向平衡型：既有自我坚持，也会在重要关系中做现实协商。";
+    }
+
+    function buildCareerReport() {
+      const parts = [];
+      if ((stats.logic || 0) >= 8) parts.push("适合问题拆解与流程优化（产品/运营/咨询/技术支持）");
+      if ((stats.eq || 0) >= 8) parts.push("适合沟通协调与对人工作（HR/培训/客户成功/内容）");
+      if ((stats.discipline || 0) >= 8) parts.push("适合长期项目制岗位（研发/财务/考试导向行业）");
+      if ((stats.social || 0) >= 7 && (stats.stamina || 0) >= 6) parts.push("适合活动策划、社区运营、户外文旅等现场型工作");
+      if (!parts.length) parts.push("更适合从综合岗位起步，在实践中逐步定型自己的优势路线");
+      return `你的能力画像显示：${parts.join("；")}。`;
+    }
+
+    function buildFinalBadge(achNames) {
+      if (achNames.includes("周末发明家")) {
+        return "【人类补觉计划发起人】你用自己的作息，重新定义了什么叫「周末」。";
+      }
+      if (achNames.includes("王不见王")) {
+        return "【双王梗学十级】你的出场自带弹幕：王不见王，梗先见梗。";
+      }
+      if (achNames.includes("你有没有为一个人苹果命")) {
+        return "【苹果级义气】甜、脆、勇，三合一限定款。";
+      }
+      if (achNames.includes("薏仁做事薏仁汤")) {
+        return "【人间高汤系】把谐音玩成温柔，也是一种生产力。";
+      }
+      if (achNames.includes("废学忘习的寝食")) {
+        return "【床与胃的联盟代表】你把生活感受值拉满，主打一个先活得有滋味。";
+      }
+      if (achNames.includes("旷野浪游者")) {
+        return "【旷野代言人】风与山海是你的充电站，格子间只是临时存档点。";
+      }
+      if (achNames.includes("无效沟通大师")) {
+        return "【爆裂直球选手】你说话不绕弯，爽快是真爽快，后续收尾要更讲究。";
+      }
+      return "【人生剧本收藏家】你没有走极端路线，而是把每个阶段都玩成了可持续版本。";
+    }
+
+    function ensureAudioContext() {
+      if (!audioCtx) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        audioCtx = new Ctx();
+      }
+      return audioCtx;
+    }
+
+    function scheduleTone(freq, startAt, duration, gainValue, oscType = "triangle") {
+      const ctx = ensureAudioContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = oscType;
+      osc.frequency.value = freq;
+      gain.gain.value = gainValue;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(startAt);
+      gain.gain.setValueAtTime(gainValue, startAt);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+      osc.stop(startAt + duration);
+    }
+
+    function playCoinSound() {
+      const ctx = ensureAudioContext();
+      if (!ctx) return;
+      const t = ctx.currentTime + 0.01;
+      // 复古街机感：金币上扬 + 闪光尾音，避免被误听成普通提示音
+      const coinRun = [1046.5, 1318.5, 1567.98, 2093.0];
+      coinRun.forEach((note, idx) => {
+        scheduleTone(note, t + idx * 0.065, 0.09, 0.07, "square");
+      });
+      scheduleTone(2637.0, t + 0.28, 0.16, 0.05, "triangle");
+      scheduleTone(3135.96, t + 0.31, 0.14, 0.035, "sine");
+      scheduleTone(1760.0, t + 0.46, 0.11, 0.045, "triangle");
+    }
+
+    function chapterMusicKey() {
+      const stage = (nodesById[currentNodeId]?.stage || "").trim();
+      if (stage.startsWith("序章") || stage.startsWith("童年")) return "child";
+      if (stage.startsWith("小学") || stage.startsWith("初中") || stage.startsWith("高中")) return "campus";
+      if (stage.startsWith("大学")) return "college";
+      if (stage.startsWith("职场")) return "work";
+      if (stage.startsWith("终章")) return "ending";
+      return "default";
+    }
+
+    function getMelodyByChapter(key) {
+      const maps = {
+        child: [523.25, 587.33, 659.25, 587.33, 523.25, 659.25],
+        campus: [659.25, 783.99, 698.46, 659.25, 587.33, 523.25],
+        college: [523.25, 659.25, 783.99, 880.0, 783.99, 659.25],
+        work: [392.0, 440.0, 523.25, 440.0, 392.0, 349.23],
+        ending: [659.25, 783.99, 987.77, 783.99, 659.25, 523.25],
+        default: [523.25, 659.25, 783.99, 659.25]
+      };
+      return maps[key] || maps.default;
+    }
+
+    function playStageBgmLoop() {
+      const ctx = ensureAudioContext();
+      if (!ctx || !bgmEnabled) return;
+      const key = chapterMusicKey();
+      currentChapterMusic = key;
+      const melody = getMelodyByChapter(key);
+      const now = ctx.currentTime + 0.03;
+      const step = 0.27;
+      melody.forEach((note, i) => {
+        scheduleTone(note, now + i * step, 0.22, 0.024);
+      });
+      bgmTimer = setTimeout(() => {
+        if (bgmEnabled && currentChapterMusic === chapterMusicKey()) playStageBgmLoop();
+        else if (bgmEnabled) playStageBgmLoop();
+      }, 2500);
+    }
+
+    function playCuteBgmLoop() {
+      playStageBgmLoop();
+    }
+
+    function toggleBgm() {
+      const btn = document.getElementById("music-toggle");
+      bgmEnabled = !bgmEnabled;
+      if (bgmEnabled) {
+        const ctx = ensureAudioContext();
+        if (ctx && ctx.state === "suspended") ctx.resume();
+        clearTimeout(bgmTimer);
+        playCuteBgmLoop();
+        btn.textContent = "BGM：关闭";
+        toast("可爱BGM已开启", true);
+      } else {
+        clearTimeout(bgmTimer);
+        btn.textContent = "BGM：开启";
+        toast("BGM已关闭", false);
+      }
+    }
+
+    function renderNode(nodeId) {
+      const app = document.getElementById("app");
+      if (graph.terminal_nodes.includes(nodeId)) {
+        currentNodeId = nodeId;
+        if (bgmEnabled) {
+          clearTimeout(bgmTimer);
+          playStageBgmLoop();
+        }
+        renderResult();
+        return;
+      }
+      const node = nodesById[nodeId];
+      if (!node || !nodeAllowed(node)) {
+        renderResult();
+        return;
+      }
+      document.body.classList.remove("summary-screen");
+      currentNodeId = nodeId;
+      if (bgmEnabled) {
+        clearTimeout(bgmTimer);
+        playStageBgmLoop();
+      }
+      showChapterOverlay(stageToChapter(node.stage || ""));
+      const pct = Math.min(100, Math.round((history.length / Math.max(1, progressTotalSteps)) * 100));
+      const nodeImage = QUESTION_IMAGE_MAP[node.id];
+      const imageHtml = nodeImage
+        ? `<div class="question-illustration show question-img-${escapeHtml(node.id)}"><img src="${encodeURI(nodeImage)}" alt="题目插画" onerror="this.parentElement.style.display='none';" /></div>`
+        : "";
+      app.innerHTML = `
+        <div class="stage-tag">${escapeHtml(node.stage || "剧情节点")}</div>
+        <div class="narrative">${escapeHtml(node.text || "")}</div>
+        ${imageHtml}
+        <div class="choices">
+          ${(node.options || []).map((c, idx) => `<button type="button" class="choice" data-i="${idx}">${escapeHtml(c.text)}</button>`).join("")}
+        </div>
+        <div class="progress"><i style="width:${pct}%"></i></div>
+      `;
+
+      app.querySelectorAll(".choice").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (!bgmEnabled) {
+            // 用户首次交互时可安全开启音频上下文
+            toggleBgm();
+          }
+          const idx = +btn.getAttribute("data-i");
+          const option = node.options[idx];
+          applyOption(option, node.id);
+          checkAchievements();
+          setTimeout(() => renderNode(option.next_id), 120);
+        });
+      });
+    }
+
+    function resetRuntime() {
+      stats = {};
+      flags = {};
+      counters = {};
+      history = [];
+      unlockedAchievements = [];
+      achievementQueue = [];
+      lastChapter = "";
+      statDockLog = [];
+      (graph.state_schema.stats || []).forEach((k) => { stats[k] = 0; });
+      (graph.state_schema.flags || []).forEach((k) => { flags[k] = false; });
+      (graph.state_schema.counters || []).forEach((k) => { counters[k] = 0; });
+    }
+
+    function showFriendlyError() {
+      const app = document.getElementById("app");
+      if (!app) return;
+      app.innerHTML = `<div class="stage-tag">运行异常</div><div class="narrative">哎呀，出错了，请重启试试吧~</div>`;
+    }
+
+    async function initGame() {
+      const app = document.getElementById("app");
+      document.body.classList.remove("summary-screen");
+      app.innerHTML = `<div class="stage-tag">加载中</div><div class="narrative">正在读取题库图谱…</div>`;
+      try {
+        graph = window.__LIFE_PERSONALITY_GRAPH__;
+        if (!graph || !graph.nodes || !Array.isArray(graph.nodes)) throw new Error("graph data missing");
+      } catch (err) {
+        app.innerHTML = `
+          <div class="stage-tag">读取失败</div>
+          <div class="narrative">哎呀，出错了，请重启试试吧~</div>
+        `;
+        return;
+      }
+      nodesById = {};
+      (graph.nodes || []).forEach((n) => { nodesById[n.id] = n; });
+      progressTotalSteps = computeLongestStepsToTerminal(graph.start_node);
+      try {
+        setStatDockCollapsed(localStorage.getItem("statDockCollapsed") === "1");
+      } catch (e) {
+        setStatDockCollapsed(false);
+      }
+      resetRuntime();
+      renderStatDock(new Set());
+      renderStatDockLog();
+      renderNode(graph.start_node);
+    }
+
+    document.getElementById("app").addEventListener("click", async (e) => {
+      if (e.target && e.target.id === "restart") {
+        rarityUnlocked = false;
+        resetRuntime();
+        renderStatDock(new Set());
+        renderStatDockLog();
+        renderNode(graph.start_node);
+      }
+      if (e.target && e.target.id === "share-unlock") {
+        await shareResultAndUnlockRarity();
+      }
+      if (e.target && e.target.id === "export-report") {
+        exportReportMarkdown();
+      }
+      if (e.target && e.target.id === "export-radar-png") {
+        exportRadarPng();
+      }
+    });
+    document.getElementById("ach-close").addEventListener("click", hideAchievementModal);
+    document.getElementById("achievement-mask").addEventListener("click", (e) => {
+      if (e.target.id === "achievement-mask") hideAchievementModal();
+    });
+    document.getElementById("music-toggle").addEventListener("click", toggleBgm);
+    document.getElementById("achievements-toggle").addEventListener("click", showAchievementWall);
+    document.getElementById("ach-wall-close").addEventListener("click", hideAchievementWall);
+    document.getElementById("ach-wall-mask").addEventListener("click", (e) => {
+      if (e.target.id === "ach-wall-mask") hideAchievementWall();
+    });
+    document.getElementById("stat-dock-toggle").addEventListener("click", () => {
+      setStatDockCollapsed(!document.body.classList.contains("stat-dock-collapsed"));
+    });
+    document.getElementById("stat-dock-reopen").addEventListener("click", () => {
+      setStatDockCollapsed(false);
+    });
+
+    window.addEventListener("error", () => {
+      showFriendlyError();
+    });
+    window.addEventListener("unhandledrejection", () => {
+      showFriendlyError();
+    });
+    try {
+      initGame();
+    } catch (e) {
+      showFriendlyError();
+    }
+  </script>
+</body>
+</html>
