@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MeMeTi——人生分岔路</title>
+  <style>
+    :root {
+      --bg: #fdf8f2;
+      --card: #fff;
+      --text: #2f2a27;
+      --muted: #6f6660;
+      --accent: #c45c4a;
+      --border: #f0e3d7;
+      --shadow: 0 10px 26px rgba(59, 40, 24, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 5% 5%, #fff1df 0, transparent 22%),
+        radial-gradient(circle at 92% 3%, #ffe9d5 0, transparent 26%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 1.4rem 0.8rem 2rem;
+    }
+    .hero {
+      background: linear-gradient(135deg, #fff 0%, #fff7ef 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 1.4rem 1.2rem 1.6rem;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      letter-spacing: 0.02em;
+    }
+    .sub {
+      margin: 0.7rem auto 1.2rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      max-width: 100%;
+      line-height: 1.5;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cta {
+      display: inline-block;
+      padding: 0.68rem 1.2rem;
+      border-radius: 999px;
+      border: none;
+      text-decoration: none;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .section-title {
+      margin: 1.25rem 0 0.8rem;
+      font-weight: 700;
+      color: #4e433c;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(63, 40, 21, 0.06);
+    }
+    .card img {
+      width: 100%;
+      height: 145px;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+      padding: 0.25rem;
+    }
+    .meta {
+      padding: 0.58rem 0.62rem 0.66rem;
+    }
+    .name {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .alias {
+      margin: 0.28rem 0 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>MeMeTi——人生分岔路</h1>
+      <p class="sub">透过小猫MeMe, 看人生!</p>
+      <a class="cta" href="./index.html">进入测试</a>
+    </section>
+
+    <div class="section-title">人格图鉴（全 9 款）</div>
+    <section class="grid">
+      <article class="card">
+        <img src="./assets/Super人形碎纸机.png" alt="Super人形碎纸机" />
+        <div class="meta">
+          <p class="name">Super人形碎纸机</p>
+          <p class="alias">任务到你手里就像自动排队跳进碎纸机的文件</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/中译中大师. Pro Max.png" alt="中译中大师 Pro Max" />
+        <div class="meta">
+          <p class="name">中译中大师 Pro Max</p>
+          <p class="alias">你能接收0.5赫兹的情绪电波</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/Transform. 跳跳糖!.png" alt="Transform 跳跳糖" />
+        <div class="meta">
+          <p class="name">Transform 跳跳糖</p>
+          <p class="alias">你在压力下变成跳跳糖</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/逻辑满满的棉花糖.png" alt="逻辑满满的棉花糖" />
+        <div class="meta">
+          <p class="name">逻辑满满的棉花糖</p>
+          <p class="alias">层软糯好捏，咬下去全是逻辑馅料</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/气氛组柴油机.png" alt="气氛组柴油机" />
+        <div class="meta">
+          <p class="name">气氛组柴油机</p>
+          <p class="alias">把冷场火锅搅成沸腾麻辣锅的汤勺</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/拼豆排布指挥官.png" alt="拼豆排布指挥官" />
+        <div class="meta">
+          <p class="name">拼豆排布指挥官</p>
+          <p class="alias">拼豆人,爱拼才会赢!</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/情绪海绵宝宝.png" alt="情绪海绵宝宝" />
+        <div class="meta">
+          <p class="name">情绪海绵宝宝</p>
+          <p class="alias">吸走的眼泪能浇出鲜花</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/慢炖老母鸡.png" alt="慢炖老母鸡" />
+        <div class="meta">
+          <p class="name">慢炖老母鸡</p>
+          <p class="alias">“煮”(处)的越久越香醇</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="./assets/佛系带刺仙人掌.png" alt="佛系带刺仙人掌" />
+        <div class="meta">
+          <p class="name">佛系带刺仙人掌</p>
+          <p class="alias">不主动扎人, 但默默迎击所有来犯的恶意</p>
+        </div>
+      </article>
+    </section>
+  </div>
+</body>
+</html>
